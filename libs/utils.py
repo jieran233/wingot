@@ -6,13 +6,16 @@ import time
 from . import sgr
 
 f_types = {
-    'title': {'prefix': sgr.b(sgr.blue(':: ')), 'suffix': '', 'info_sgr': sgr.b},
+    'title': {'prefix': sgr.b(sgr.blue('🍀 ')), 'suffix': '', 'info_sgr': sgr.b},
+    'info': {'prefix': sgr.b(sgr.cyan('--> INFO: ')), 'suffix': '', 'info_sgr': sgr.b},
     'error': {'prefix': sgr.b(sgr.red('--> ERROR: ')), 'suffix': '', 'info_sgr': sgr.b},
     'warning': {'prefix': sgr.b(sgr.yellow('--> WARNING: ')), 'suffix': '', 'info_sgr': sgr.b},
+
     'sub_title': {'prefix': sgr.b(sgr.blue(' -> ')), 'suffix': '', 'info_sgr': None},
     'sub_info': {'prefix': sgr.b(sgr.cyan(' -> ')), 'suffix': '', 'info_sgr': None},
     'sub_error': {'prefix': sgr.b(sgr.red(' -> ')), 'suffix': '', 'info_sgr': None},
     'sub_warning': {'prefix': sgr.b(sgr.yellow(' -> ')), 'suffix': '', 'info_sgr': None},
+
     'prompt': {'prefix': sgr.b(sgr.green('==> ')), 'suffix': '', 'info_sgr': None},
     'subprocess_output': {'prefix': '    ', 'suffix': '', 'info_sgr': None}
 }
@@ -113,6 +116,9 @@ def yes_or_no_ask(prompt: str, default: bool):  # Proceed with installation? [Y/
     else:
         return default
 
-# def windows_system_restore_point_creating():
-#     # ref: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/checkpoint-computer?view=powershell-5.1
-#     # powershell -c Checkpoint-Computer -RestorePointType APPLICATION_INSTALL -Description "Install MyApp"
+
+def windows_system_restore_point_creating(description):
+    # ref: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/checkpoint-computer
+    # powershell -c Checkpoint-Computer -RestorePointType APPLICATION_INSTALL -Description "Install MyApp"
+    process = subprocess.run(['powershell', '-c', 'Checkpoint-Computer', '-RestorePointType', 'APPLICATION_INSTALL',
+                              '-Description', '"{}"'.format(description)])

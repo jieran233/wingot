@@ -1,5 +1,7 @@
+import os
 import subprocess
 import re
+import time
 
 from . import utils
 from . import sgr
@@ -12,14 +14,20 @@ def check_available():
 
 def list_upgradable():
     # winget list --upgrade-available --include-unknown
-    winget = utils.subprocess_run(['winget', 'list', '--upgrade-available', '--include-unknown'])
-    return winget.stdout.decode('UTF-8')
+    process = utils.subprocess_run(['winget', 'list', '--upgrade-available', '--include-unknown'])
+    return format_output(process.stdout.decode('UTF-8'))
 
 
-def list_excluded():
+def list_excluded(upgradable):
     # winget pin list
-    winget = utils.subprocess_run(['winget', 'pin', 'list'])
-    return winget.stdout.decode('UTF-8')
+    if ((re.search('winget pin', upgradable) is not None)  # 判断 winget list --upgrade-available 是否有提示有 pin
+            and (re.search('--include-pinned', upgradable) is not None)):
+        process = utils.subprocess_run(['winget', 'pin', 'list'])
+        excluded = format_output(process.stdout.decode('UTF-8'))
+
+    else:
+        excluded = None
+    return excluded
 
 
 def format_output(raw_output: str):
@@ -89,18 +97,24 @@ def managing_excluded(operation: str, pkgs: list):
     # winget pin <add/remove> <package>  # only 1 package a command
     i = 0
     for pkg in pkgs:
-        winget = utils.subprocess_run(['winget', 'pin', operation, pkg], raise_error=False)
-        error = utils.subprocess_error_check_and_print(winget)  # 这行应与上面一行的 raise_error=False 同时使用
-        stdout = winget.stdout.decode('UTF-8')
+        process = utils.subprocess_run(['winget', 'pin', operation, pkg], raise_error=False)
+        error = utils.subprocess_error_check_and_print(process)  # 这行应与上面一行的 raise_error=False 同时使用
+        stdout = process.stdout.decode('UTF-8')
         # print("returncode: {}".format(winget.returncode))
         i += 1
         if (operation == 'add') and (error is False):
-            utils.printf('sub_info', "Excluded list: {} {} ".format(sgr.green("+"), pkg, ))
+            utils.printf('sub_info', "Excluded list: {} {} ".format(sgr.b(sgr.green("+")), pkg, ))
         elif (operation == 'remove') and (error is False):
-            utils.printf('sub_info', "Excluded list: {} {} ".format(sgr.red("-"), pkg, ))
+            utils.printf('sub_info', "Excluded list: {} {} ".format(sgr.b(sgr.red("-")), pkg, ))
 
 
-def upgrading_all():
+def fully_upgrading():
     # winget upgrade --all --include-unknown --accept-package-agreements --accept-source-agreements
-    winget = subprocess.run(['winget', 'upgrade', '--all', '--include-unknown',
-                             '--accept-package-agreements', '--accept-source-agreements'])
+    process = subprocess.run(['winget', 'upgrade', '--all', '--include-unknown',
+                              '--accept-package-agreements', '--accept-source-agreements'])
+
+
+def logs_cleaning():
+    command = ['powershell', '-c', 'rm', '"{}\\AppData\\Local\\Packages\\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe'
+                                         '\\LocalState\\DiagOutputDir\\*.log"'.format(os.environ['USERPROFILE'])]
+    process = subprocess.run(command, capture_output=True)  # Block output

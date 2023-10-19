@@ -17,7 +17,7 @@ upgrading is just *press* away!
 - Windows 10 or 11
 - Python installed
 - Install at least one supported package manager (e.g. WinGet)
-- Powershell installed (Windows built-in or cross-platform version)
+- Powershell (Windows built-in version enabled or cross-platform version installed)
 - Windows Terminal (Recommended)
 
 ## See also
