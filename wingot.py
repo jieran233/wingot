@@ -18,7 +18,7 @@ def winget_main():
 
         # clean up backlog of logs
         utils.printf('title', "[{}] Cleaning up backlog of logs...".format(working_packing_manager))
-        winget.logs_cleaning()
+        winget.cleanup()
 
         # list upgradable packages
         utils.printf('title', "[{}] Searching for updates...".format(working_packing_manager))

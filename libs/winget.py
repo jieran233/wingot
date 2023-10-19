@@ -1,7 +1,6 @@
 import os
 import subprocess
 import re
-import time
 
 from . import utils
 from . import sgr
@@ -114,7 +113,7 @@ def fully_upgrading():
                               '--accept-package-agreements', '--accept-source-agreements'])
 
 
-def logs_cleaning():
+def cleanup():  # logs cleanup
     command = ['powershell', '-c', 'rm', '"{}\\AppData\\Local\\Packages\\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe'
                                          '\\LocalState\\DiagOutputDir\\*.log"'.format(os.environ['USERPROFILE'])]
     process = subprocess.run(command, capture_output=True)  # Block output
