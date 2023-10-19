@@ -61,21 +61,19 @@ def winget_main():
         # prompt for conforming upgradable packages
         utils.printf('title', "[{}] Starting package(s) upgrade...".format(working_packing_manager))
 
-        if not ((_add_excluded_pkgs is None) and (_remove_excluded_pkgs is None)):
-            # 若排除列表发生更改则更新升级包列表和排除列表，否则直接读取现有变量
+        if not ((_add_excluded_pkgs is None) and (_remove_excluded_pkgs is None)):  # 判断排除列表是否有更改
+            # 排除列表有更改：更新升级包列表和排除列表，并重新打印输出
             upgradable = winget.list_upgradable()
             excluded = winget.list_excluded(upgradable)
             if winget.list_excluded(upgradable) is not None:
                 excluded_exist = True
-                utils.printf('sub_warning', "Excluded package(s):")
-                print(excluded)
             else:
                 excluded_exist = False
 
-        print(upgradable)  # list upgradable packages
-        if excluded_exist:  # list excluded package(s) (if exist)
-            utils.printf('sub_warning', "Excluded package(s):")
-            print(excluded)
+            print(upgradable)  # list upgradable packages
+            if excluded_exist:  # list excluded package(s) (if exist)
+                utils.printf('sub_warning', "Excluded package(s):")
+                print(excluded)
 
         if utils.yes_or_no_ask("[{}] Proceed with installation?".format(working_packing_manager), default=True):
             winget.fully_upgrading()
