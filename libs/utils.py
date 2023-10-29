@@ -50,8 +50,30 @@ def os_checking():
         raise Exception("This script only supports Windows")
 
 
-def subprocess_error_check_and_print(completed_process):
-    error = (completed_process.returncode != 0)
+def subprocess_error_check_and_print(completed_process,
+                                     check_stdout_regex: str = None, check_stderr_regex: str = None):
+    error: bool = (completed_process.returncode != 0)
+
+    if check_stdout_regex is not None:
+        stdout_regex_errors = re.findall(check_stdout_regex,
+                                         completed_process.stdout.decode('UTF-8'), flags=re.M)
+        if stdout_regex_errors:
+            error = True
+            for _error in stdout_regex_errors:
+                printf('sub_error', re.sub('\n\n', '\n', "An error occurred while running {}: \n{}"
+                                           .format(str(completed_process.args), _error)))
+            return error
+
+    if check_stderr_regex is not None:
+        stderr_regex_errors = re.findall(check_stderr_regex,
+                                         completed_process.stderr.decode('UTF-8'), flags=re.M)
+        if stderr_regex_errors:
+            error = True
+            for _error in stderr_regex_errors:
+                printf('sub_error', re.sub('\n\n', '\n', "An error occurred while running {}: \n{}"
+                                           .format(str(completed_process.args), _error)))
+            return error
+
     if error:
         printf('sub_error', re.sub('\n\n', '\n', "An error occurred while running {}: \n{}\n{}"
                                    .format(str(completed_process.args), completed_process.stdout.decode('UTF-8'),
@@ -59,20 +81,21 @@ def subprocess_error_check_and_print(completed_process):
     return error
 
 
-def subprocess_run(args: list, retry=True, raise_error=True, capture_output=True):
+def subprocess_run(args: list, retry=True, raise_error=True, capture_output=True,
+                   check_stdout_regex: str = None, check_stderr_regex: str = None):
     completed_process = subprocess.run(args, capture_output=capture_output)
 
     retry_times = 0
     max_retry = 3
 
-    if subprocess_error_check_and_print(completed_process):
+    if subprocess_error_check_and_print(completed_process, check_stdout_regex, check_stderr_regex):
         if retry:
             while True:
                 retry_times += 1
                 time.sleep(1)
                 printf('subprocess_output', '({}/{}) Retrying...'.format(retry_times, max_retry))
                 completed_process = subprocess.run(args, capture_output=capture_output)
-                error = (completed_process.returncode != 0)
+                error = subprocess_error_check_and_print(completed_process, check_stdout_regex, check_stderr_regex)
                 if not error:
                     break
                 if retry_times >= max_retry:

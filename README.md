@@ -5,7 +5,7 @@ upgrading is just *press* away!
 ## Planned supported package managers
 
 - (✅ Implemented) WinGet
-- (⏳ Coming soon) Scoop
+- (✅ Implemented) Scoop
 - (💭 Envisioned) APT (WSL Ubuntu)
 - (💭 Envisioned) Pacman (MSYS2)
 - (💭 Envisioned) Cygwin Setup

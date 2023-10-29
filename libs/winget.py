@@ -97,9 +97,8 @@ def managing_excluded(operation: str, pkgs: list):
     i = 0
     for pkg in pkgs:
         process = utils.subprocess_run(['winget', 'pin', operation, pkg], raise_error=False)
+        # check return code
         error = utils.subprocess_error_check_and_print(process)  # 这行应与上面一行的 raise_error=False 同时使用
-        stdout = process.stdout.decode('UTF-8')
-        # print("returncode: {}".format(winget.returncode))
         i += 1
         if (operation == 'add') and (error is False):
             utils.printf('sub_info', "Excluded list: {} {} ".format(sgr.b(sgr.green("+")), pkg, ))
