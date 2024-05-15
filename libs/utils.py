@@ -143,5 +143,5 @@ def yes_or_no_ask(prompt: str, default: bool):  # Proceed with installation? [Y/
 def windows_system_restore_point_creating(description):
     # ref: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/checkpoint-computer
     # powershell -c Checkpoint-Computer -RestorePointType APPLICATION_INSTALL -Description "Install MyApp"
-    process = subprocess.run(['powershell', '-c', 'Checkpoint-Computer', '-RestorePointType', 'APPLICATION_INSTALL',
+    process = subprocess.run(['sudo', 'powershell', '-c', 'Checkpoint-Computer', '-RestorePointType', 'APPLICATION_INSTALL',
                               '-Description', '"{}"'.format(description)])

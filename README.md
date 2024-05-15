@@ -18,6 +18,7 @@ upgrading is just *press* away!
 - Python installed
 - Install at least one supported package manager (e.g. WinGet)
 - Powershell (Windows built-in version enabled or cross-platform version installed)
+- [gsudo](https://github.com/gerardog/gsudo) (or enable sudo for Windows 11) for elevate privileges when creating system restore points
 - Windows Terminal (Recommended)
 
 ## See also
